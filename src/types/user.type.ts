@@ -1,0 +1,9 @@
+export interface User {
+  id: number
+  name: string
+  age: number
+  gender: 'male' | 'female' | 'other'
+  bio?: string
+  email: string
+  created_at: string
+}
