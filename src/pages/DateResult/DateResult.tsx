@@ -12,12 +12,8 @@ export default function DateResult() {
   const matchIdNum = Number(matchId)
   const [hasTriedFinding, setHasTriedFinding] = useState(false)
 
-  const { data: dateData, isLoading, error, refetch } = useGetDateQuery(matchIdNum, !!matchId)
+  const { data: dateData, isLoading, refetch } = useGetDateQuery(matchIdNum, !!matchId)
   const findCommonDateMutation = useFindCommonDateMutation()
-
-  if (!isAuthenticated || !currentUser) {
-    return <Navigate to={path.login} replace />
-  }
 
   const handleFindCommonDate = async () => {
     try {
@@ -33,8 +29,9 @@ export default function DateResult() {
       } else {
         toast.warning('Chưa tìm được thời gian trùng. Vui lòng chọn lại.')
       }
-    } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || 'Có lỗi xảy ra!'
+    } catch (error) {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Có lỗi xảy ra!'
       toast.error(errorMessage)
       setHasTriedFinding(true)
     }
@@ -44,7 +41,12 @@ export default function DateResult() {
     if (!isLoading && !dateData && !hasTriedFinding && !findCommonDateMutation.isPending) {
       handleFindCommonDate()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, dateData, hasTriedFinding])
+
+  if (!isAuthenticated || !currentUser) {
+    return <Navigate to={path.login} replace />
+  }
 
   if (isLoading) {
     return (
